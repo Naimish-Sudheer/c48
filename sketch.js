@@ -3,6 +3,8 @@ var mortar
 var mortarImageback
 var cloudImage
 var backgroundImage
+var score=0
+var cool
 
 function preload (){
   mortarImage=loadImage("Images/cannon.png")
@@ -34,6 +36,9 @@ function setup() {
   mortar.addImage("Mortar1",mortarImage)
   mortar.scale=0.6
   mortar.setCollider("circle",100,-20,30)
+
+  cool = createSprite(mortar.x,mortar.y,10,10)
+  cool.shapeColor="red"
 }
 
 function draw() {
@@ -47,8 +52,21 @@ function draw() {
   }
   if(mouseX<810&&mouseX>716&&mouseY>296&&mouseY<388){
     mortar.pointTo(mouseX,mouseY)
+    
   }
-  mortar.debug=true
+  cool.rotateToDirection=true
+  cool.rotation=cool.rotation+5
+  cool.x=mortar.x-10
+  cool.y=mortar.y- 10
+  
+   for (var i = 0; i < bulletGroup.length; i++) {
+    if (bulletGroup.get(i).isTouching(floatingObjectGroup)) {
+        bulletGroup.get(i).destroy();
+        floatingObjectGroup.destroyEach()
+    }
+    
+}
+  
   drawSprites();
 }
 
@@ -61,6 +79,7 @@ function spawnBullet(){
   bullet.velocityX=-8
   bullet.velocityY=-8
   bulletGroup.add(bullet)
+  
 }
 
 function spawnFloatingObjects() {
@@ -72,6 +91,7 @@ function spawnFloatingObjects() {
   floatingObjectGroup.add(floatingObject1)
   floatingObject1.addImage("HotAirBalloon",hotAirBalloonImage)
   floatingObject1.scale=0.6
+  floatingObject1.debug=true
 }
 
 function spawnClouds(){
