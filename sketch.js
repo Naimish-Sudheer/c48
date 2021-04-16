@@ -1,10 +1,12 @@
-var bulletGroup,floatingObjectGroup,cloudGroup
+var floatingObject1
+var bulletGroup,floatingObjectGroup,cloudGroup,bombGroup
 var mortar
 var mortarImageback
 var cloudImage
 var backgroundImage
 var score=0
 var cool
+var gameState="play"
 
 function preload (){
   mortarImage=loadImage("Images/cannon.png")
@@ -12,6 +14,7 @@ function preload (){
   bulletImage=loadImage("Images/bullet.png")
   hotAirBalloonImage=loadImage("Images/HotAirBalloon.png")
   backgroundImage=loadImage("Images/background.png")
+  bombImage=loadImage("Images/bomb.png")
 }
 
 function setup() {
@@ -31,6 +34,7 @@ function setup() {
   cloudGroup=new Group()
   bulletGroup=new Group()
   floatingObjectGroup=new Group()
+  bombGroup= new Group()
   
   mortar = createSprite(width-100,height-100);
   mortar.addImage("Mortar1",mortarImage)
@@ -39,52 +43,73 @@ function setup() {
 
   cool = createSprite(mortar.x,mortar.y,10,10)
   cool.shapeColor="red"
+  cool.visible=false;
 }
 
 function draw() {
   background(255,255,255);  
-  spawnClouds()
+
+  if(gameState==="play"){
+    spawnClouds()
   if (frameCount % 60 === 0){
     spawnFloatingObjects()
   }
   if (keyWentDown("space")){
     spawnBullet()
   }
-  if(mouseX<810&&mouseX>716&&mouseY>296&&mouseY<388){
+  if(mouseX<810 && mouseX>716 && mouseY>296 && mouseY<388){
     mortar.pointTo(mouseX,mouseY)
-    
+    cool.x=mouseX
+    cool.y=mouseY
   }
-  cool.rotateToDirection=true
-  cool.rotation=cool.rotation+5
-  cool.x=mortar.x-10
-  cool.y=mortar.y- 10
-  
-   for (var i = 0; i < bulletGroup.length; i++) {
+  if((frameCount%150===0)&& floatingObject1){
+    spawnBomb()
+  }
+  if(score===25){gamestate="win"}
+  for (var i = 0; i < bulletGroup.length; i++) {
     if (bulletGroup.get(i).isTouching(floatingObjectGroup)) {
         bulletGroup.get(i).destroy();
         floatingObjectGroup.destroyEach()
+        score+=1
     }
+
     
 }
+
+  }else if(gamestate==="lose"){
+
+  }
+  
+  
+  
+   
   
   drawSprites();
+  strokeWeight(6)
+  textSize(20)
+  stroke("blue")
+  text("Score :"+score,25,475)
+  
 }
 
 function spawnBullet(){
 
-  var bullet = createSprite(mortar.x,mortar.y,17.5,17.5)
+  var bullet = createSprite(cool.x,cool.y,17.5,17.5)
   bullet.addImage("bulletImage",bulletImage)
   bullet.debug=true
   bullet.setCollider("circle",-10,15,7.5)
   bullet.velocityX=-8
   bullet.velocityY=-8
   bulletGroup.add(bullet)
+  //if(){
+
+  ///////}
   
 }
 
 function spawnFloatingObjects() {
 
-  var floatingObject1 = createSprite(0,100,10,10)
+  floatingObject1 = createSprite(0,100,10,10)
   floatingObject1.y = random(50,200)
   floatingObject1.velocityX = 10;
   floatingObject1.lifetime=900/10
@@ -92,6 +117,17 @@ function spawnFloatingObjects() {
   floatingObject1.addImage("HotAirBalloon",hotAirBalloonImage)
   floatingObject1.scale=0.6
   floatingObject1.debug=true
+}
+function spawnBomb(){
+  var bomb = createSprite(floatingObject1.x,floatingObject1.y,17.5,17.5)
+  bomb.addImage("bombImage",bombImage)
+  bomb.scale=0.15
+  bomb.debug=true
+  bomb.setCollider("circle",-10,15,7.5)
+ 
+  bomb.velocityY=random(3,8)
+  bombGroup.add(bomb)
+  
 }
 
 function spawnClouds(){
@@ -108,3 +144,6 @@ function spawnClouds(){
   }
   
 }
+
+
+ 
